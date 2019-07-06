@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Calculando IMC</title>
+</head>
+
+<!-- CSS -->
+<style>
+	body{
+		background-color: #842F2F;
+		font: 15pt verdana;
+		color: white;
+	}
+	section.calculo{
+		width: 500px;
+		margin: auto;
+		color:  #842F2F;
+		padding: 10px;
+		text-align: center;
+		background: #D1E622; 
+		border-radius: 30px;
+	}
+.button {
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 28px;
+  padding: 20px;
+  width: 200px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+</style>
+
+<!-- body -->
+<body>
+	
+<h1>Olá, --nome--!</h1>
+
+<!-- lorem -->
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo enim facere corrupti modi, ipsum autem, non vero voluptatibus eos temporibus, error accusamus est? Provident repellendus quia, illo quam consequuntur perspiciatis!</p>
+<p>Et est beatae corporis, itaque a architecto esse quaerat voluptatem maiores ipsam dolor recusandae voluptate sint. Reiciendis quaerat porro, dicta, soluta molestiae voluptates veritatis voluptas facilis, deleniti sapiente quam nostrum?</p>
+
+<section class="calculo">
+<!-- peso e altura-->
+<p>Qual a sua altura? <input type="number" name="" id="altura1"></p>
+<p>Qual o seu peso? <input type="number" name="" id="peso1"></p>
+<!-- botao do imc -->
+<p><button onclick="calcular_imc()" class = "button" >
+<span>Calcular o meu IMC</span></button></p>
+
+<!-- respostas -->
+<div id="res_imc">Seu IMC é de: </div>
+<div id="res_status"> Seu peso está </div>
+</section>
+
+<!-- script-->
+<script>
+	// nome
+	var nome = prompt("Qual é seu nome?")
+	// funcao calcular imc
+	function calcular_imc() {
+		var altura = Number(document.getElementById('altura1').value)
+		var peso = Number(document.getQuerySelector('input#peso1').value)
+		var imc = peso/(altura*altura)
+		var imc = imc.toFixed(2) 
+
+	document.querySelector('div#res_imc').innerHTML = (`Seu IMC é de <strong> ${imc} </strong>`)
+	}
+	// funcao 
+	function calcular_status () {
+	var status = ""
+	switch (true) {
+		case imc < 17:
+			var status = "muito abaixo do peso";
+			break;
+		case imc >= 17 && imc < 18.50:
+			var status = "abaixo do peso";
+			break;
+		case imc >= 18.50 && imc < 25:
+			var status = "com peso normal";
+			break;
+		case imc >= 25 && imc < 30:
+			var status = "acima do peso";
+			break;
+		case imc >= 30:
+			var status = "muito acima do peso (obesidade)";
+			break;
+	}
+	}
+
+</script>	
+</body>

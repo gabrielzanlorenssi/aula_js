@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Olá mundo</title>
+</head>
+
+<!-- sublime packages:
+emmet, colorpicker, nodejs, javascript completion -->
+
+<!-- CSS -->
+
+<style>
+	body{
+		background-color: #842F2F;
+		font: 15pt verdana;
+		color: white;
+	}
+</style>
+
+<!-- BODY -->
+
+<body>
+
+<div>
+	<h1>Olá Mundo!</h1>
+</div>
+
+<div>
+		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus non animi impedit. Ea iusto tempora voluptatem, cumque molestias neque in, corporis incidunt accusantium saepe quidem, quibusdam eum doloremque, voluptas nulla.</p>
+		<p>Quod, nihil. Necessitatibus dolor unde esse sunt consequatur distinctio ipsam est aperiam! Iste dolorum neque reprehenderit, tempora hic illum, possimus blanditiis tenetur iusto consequatur aliquam voluptatem ipsam nam expedita, culpa!</p>
+		<p>Maxime, deleniti necessitatibus quaerat autem dicta, obcaecati sapiente, quam iusto aliquid aliquam quos. Soluta perferendis consequatur quos maxime eligendi illo, architecto maiores, est facere, doloremque reprehenderit nulla dolor perspiciatis velit!</p>
+		<p>Illum officia reprehenderit, repudiandae recusandae fugit, harum molestiae incidunt porro quae expedita enim vitae fuga doloremque iusto adipisci in suscipit sequi? Corrupti accusantium doloribus quas ipsa, ducimus. Est, sint, accusantium.</p>
+		<p>Neque dolor distinctio nisi aut beatae reprehenderit, fuga porro eum repellendus, deserunt natus, molestiae consectetur corporis commodi voluptatum. Dolorum dignissimos soluta sint sequi ab harum laborum temporibus officiis doloremque voluptates!</p>
+	</div>	
+</body>
+
+<!-- JavaScript -->
+<script>
+	window.alert("Bom dia!")
+	// alert("Boa tarde..")
+	// confirm("Boa noite?")
+	var nome = prompt("Qual o seu nome?")
+	alert("Olá, "+nome+"!")
+	var altura = Number(prompt("Olá, "+nome+"!"+" Informe sua altura:"))
+	var peso = Number(prompt(nome+", informe seu peso:"))
+	var imc = peso/(altura*altura)
+	// IMC
+	alert("Seu IMC é de "+imc.toFixed(2))
+	// status do IMC
+	var status = ""
+
+	switch (true) {
+		case imc < 17:
+			var status = "muito abaixo do peso";
+			break;
+		case imc >= 17 && imc < 18.50:
+			var status = "abaixo do peso";
+			break;
+		case imc >= 18.50 && imc < 25:
+			var status = "com peso normal";
+			break;
+		case imc >= 25 && imc < 30:
+			var status = "acima do peso";
+			break;
+		case imc >= 30:
+			var status = "muito acima do peso (obesidade)";
+			break;
+	}
+	// status do IMC
+	alert(`Você está ${status}`)
+
+</script>
+
+</html>
