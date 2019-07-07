@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+
+<h1 id="nome">Olá, --nome--</h1>
+
+
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo enim facere corrupti modi, ipsum autem, non vero voluptatibus eos temporibus, error accusamus est? Provident repellendus quia, illo quam consequuntur perspiciatis!</p>
+<p>Et est beatae corporis, itaque a architecto esse quaerat voluptatem maiores ipsam dolor recusandae voluptate sint. Reiciendis quaerat porro, dicta, soluta molestiae voluptates veritatis voluptas facilis, deleniti sapiente quam nostrum?</p>
+
+<!-- peso e altura-->
+<p>Qual a sua altura? </p> 
+<input type="number" value="1.80" id="input1"
+min=0.00 max=3.00 step=0.01>
+
+<p>Qual o seu peso? </p> 
+<input type="number" value="70" id="input2"
+min=0 max=500 step=1>
+
+<!-- botao do imc -->
+<div>
+<button onclick="imc_calc()" class = "button" > Teste </button>
+</div>
+
+<div>
+	<p id="teste">Sua altura é de:</p>
+</div>
+
+<div>
+<p id="p1">Hello World!</p>
+</div>
+
+<script>
+var nome = prompt("Qual o seu nome?");
+document.getElementById("nome").innerHTML = `Olá, ${nome}!`;
+
+function imc_calc() {
+var in_input1 = document.getElementById('input1').value; //A
+var in_input2 = document.getElementById('input2').value; //P
+
+var imc = in_input2 / Math.pow(in_input1, 2)
+var imc = imc.toFixed(2)
+
+document.getElementById("teste").innerHTML = `Seu IMC é de ${imc}`;
+}
+
+</script>
+
+</body>
+
+</html>

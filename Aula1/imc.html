@@ -23,6 +23,7 @@
 		background: #D1E622; 
 		border-radius: 30px;
 	}
+
 .button {
   border-radius: 4px;
   background-color: #f4511e;
@@ -34,7 +35,7 @@
   width: 200px;
   transition: all 0.5s;
   cursor: pointer;
-  margin: 5px;
+  margin: auto;
 }
 
 .button span {
@@ -66,40 +67,56 @@
 <!-- body -->
 <body>
 	
-<h1>Olá, --nome--!</h1>
+<h1 id="nome">Olá, --nome--!</h1>
 
 <!-- lorem -->
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo enim facere corrupti modi, ipsum autem, non vero voluptatibus eos temporibus, error accusamus est? Provident repellendus quia, illo quam consequuntur perspiciatis!</p>
-<p>Et est beatae corporis, itaque a architecto esse quaerat voluptatem maiores ipsam dolor recusandae voluptate sint. Reiciendis quaerat porro, dicta, soluta molestiae voluptates veritatis voluptas facilis, deleniti sapiente quam nostrum?</p>
+<p>O índice de massa corporal (IMC) é uma medida internacional usada para calcular se uma pessoa está no peso ideal. Desenvolvido pelo polímata Lambert Quételet no fim do século XIX, trata-se de um método fácil e rápido para a avaliação do nível de gordura de cada pessoa, sendo, por isso, um preditor internacional de obesidade adotado pela Organização Mundial da Saúde (OMS).</p>
+<p>O IMC é determinado pela divisão da massa do indivíduo pelo quadrado de sua altura, em que a massa está em quilogramas e a altura em metros.</p>
 
 <section class="calculo">
 <!-- peso e altura-->
-<p>Qual a sua altura? <input type="number" name="" id="altura1"></p>
-<p>Qual o seu peso? <input type="number" name="" id="peso1"></p>
-<!-- botao do imc -->
-<p><button onclick="calcular_imc()" class = "button" >
-<span>Calcular o meu IMC</span></button></p>
+<p>Qual a sua altura? </p> 
+<input type="number" value="1.80" id="input1"
+min=0.00 max=3.00 step=0.01>
 
-<!-- respostas -->
-<div id="res_imc">Seu IMC é de: </div>
-<div id="res_status"> Seu peso está </div>
+<p>Qual o seu peso? </p> 
+<input type="number" value="70" id="input2"
+min=0 max=500 step=1>
+
+<button onclick="imc_calc(); imc_status()" class = "button" >
+<span>Calcular o meu IMC</span></button>
+
 </section>
 
-<!-- script-->
-<script>
-	// nome
-	var nome = prompt("Qual é seu nome?")
-	// funcao calcular imc
-	function calcular_imc() {
-		var altura = Number(document.getElementById('altura1').value)
-		var peso = Number(document.getQuerySelector('input#peso1').value)
-		var imc = peso/(altura*altura)
-		var imc = imc.toFixed(2) 
+<!-- botao do imc -->
 
-	document.querySelector('div#res_imc').innerHTML = (`Seu IMC é de <strong> ${imc} </strong>`)
-	}
+
+<!-- respostas -->
+<div>
+	<p id="res1">Seu IMC é de:</p>
+	<p id="res2">Você está..</p>
+</div>
+
+
+<!-- javscript -->
+<script>
+var nome = prompt("Qual o seu nome?");
+document.getElementById("nome").innerHTML = `Olá, ${nome}!`;
+
+function imc_calc() {
+var in_input1 = document.getElementById('input1').value; //A
+var in_input2 = document.getElementById('input2').value; //P
+
+var imc = in_input2 / Math.pow(in_input1, 2)
+var imc = imc.toFixed(2)
+
+document.getElementById("res1").innerHTML = `Seu IMC é de ${imc}`;
+}
 	// funcao 
-	function calcular_status () {
+	function imc_status () {
+	var in_input1 = document.getElementById('input1').value; 
+	var in_input2 = document.getElementById('input2').value; 
+	var imc = in_input2 / Math.pow(in_input1, 2)
 	var status = ""
 	switch (true) {
 		case imc < 17:
@@ -118,7 +135,12 @@
 			var status = "muito acima do peso (obesidade)";
 			break;
 	}
-	}
 
-</script>	
+	document.getElementById("res2").innerHTML = `Você está ${status}`
+	} 
+
+</script>
+
+
+
 </body>
