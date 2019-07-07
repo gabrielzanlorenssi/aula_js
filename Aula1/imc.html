@@ -9,26 +9,35 @@
 
 <!-- CSS -->
 <style>
-	body{
-		background-color: #842F2F;
+body{
+		background-color: #FAF5F2;
 		font: 15pt verdana;
-		color: white;
+		color: black;
 	}
-	section.calculo{
-		width: 500px;
+
+section.calculo{
+		width: 300px;
 		margin: auto;
-		color:  #842F2F;
+		color:  #FAF5F2;
 		padding: 10px;
 		text-align: center;
-		background: #D1E622; 
+		background: #f4511e; 
 		border-radius: 30px;
-	}
+}
+
+section.calculo2{
+		width: 500px;
+		margin: auto;
+		padding: 20px;
+		text-align: center;
+		border-radius: 30px;
+}
 
 .button {
   border-radius: 4px;
   background-color: #f4511e;
   border: none;
-  color: #FFFFFF;
+  color: #FAF5F2;
   text-align: center;
   font-size: 28px;
   padding: 20px;
@@ -70,30 +79,32 @@
 <h1 id="nome">Olá, --nome--!</h1>
 
 <!-- lorem -->
-<p>O índice de massa corporal (IMC) é uma medida internacional usada para calcular se uma pessoa está no peso ideal. Desenvolvido pelo polímata Lambert Quételet no fim do século XIX, trata-se de um método fácil e rápido para a avaliação do nível de gordura de cada pessoa, sendo, por isso, um preditor internacional de obesidade adotado pela Organização Mundial da Saúde (OMS).</p>
+<p>O índice de massa corporal (IMC) é uma medida internacional usada para calcular se uma pessoa está no peso ideal.</p>
+<p>Desenvolvido pelo polímata Lambert Quételet no fim do século XIX, trata-se de um método fácil e rápido para a avaliação do nível de gordura de cada pessoa, sendo, por isso, um preditor internacional de obesidade adotado pela Organização Mundial da Saúde (OMS).</p>
 <p>O IMC é determinado pela divisão da massa do indivíduo pelo quadrado de sua altura, em que a massa está em quilogramas e a altura em metros.</p>
 
 <section class="calculo">
 <!-- peso e altura-->
-<p>Qual a sua altura? </p> 
+<p style="margin: 0px">Qual a sua altura? </p> 
 <input type="number" value="1.80" id="input1"
 min=0.00 max=3.00 step=0.01>
 
-<p>Qual o seu peso? </p> 
+<p style="margin: 0px">Qual o seu peso? </p> 
 <input type="number" value="70" id="input2"
 min=0 max=500 step=1>
-
-<button onclick="imc_calc(); imc_status()" class = "button" >
-<span>Calcular o meu IMC</span></button>
-
 </section>
 
+<section class="calculo2">
 <!-- botao do imc -->
+<button onclick="imc_calc(); imc_status(); peso_ideal()" class = "button" >
+<span>Calcular o meu IMC</span></button>
+</section>
 
 
 <!-- respostas -->
 <div>
 	<p id="res1">Seu IMC é de:</p>
+	<p id="res3">Seu peso ideal está entre..</p>
 	<p id="res2">Você está..</p>
 </div>
 
@@ -112,7 +123,18 @@ var imc = imc.toFixed(2)
 
 document.getElementById("res1").innerHTML = `Seu IMC é de ${imc}`;
 }
-	// funcao 
+	// funcao peso_ideal
+	function peso_ideal () {
+		var in_altura = document.getElementById('input1').value;
+		var ideal_min = in_altura * in_altura * 18.5;
+		var ideal_min = ideal_min.toFixed(0);
+		var ideal_max = in_altura * in_altura * 25;
+		var ideal_max = ideal_max.toFixed(0);
+
+	document.getElementById("res3").innerHTML = `Seu peso ideal está entre ${ideal_min}kg e ${ideal_max}kg`
+
+	}
+	// funcao imc_status
 	function imc_status () {
 	var in_input1 = document.getElementById('input1').value; 
 	var in_input2 = document.getElementById('input2').value; 
@@ -121,18 +143,23 @@ document.getElementById("res1").innerHTML = `Seu IMC é de ${imc}`;
 	switch (true) {
 		case imc < 17:
 			var status = "muito abaixo do peso";
+			document.getElementById("res2").style.color = "red";
 			break;
 		case imc >= 17 && imc < 18.50:
 			var status = "abaixo do peso";
+			document.getElementById("res2").style.color = "orange";
 			break;
 		case imc >= 18.50 && imc < 25:
 			var status = "com peso normal";
+			document.getElementById("res2").style.color = "blue";
 			break;
 		case imc >= 25 && imc < 30:
 			var status = "acima do peso";
+			document.getElementById("res2").style.color = "orange";
 			break;
 		case imc >= 30:
 			var status = "muito acima do peso (obesidade)";
+			document.getElementById("res2").style.color = "red";
 			break;
 	}
 
