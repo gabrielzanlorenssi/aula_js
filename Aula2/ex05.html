@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Operadores</title>
+    <style>
+        body {
+            background-color: aquamarine;
+            color: black;
+            font: 16pt Helvetica;
+            padding-left: 25px;
+        }
+        #corpo {
+            background-color: purple;
+            font: 14pt Helvetica;
+            padding: 30px;
+            width: 500px;
+            margin: auto;
+            text-align: center;
+            color: white;
+            border-radius: 30px;
+        }
+        input {
+            padding: 5px;
+            margin-right: 10px;
+        }
+        .button {
+            width: 150px;
+            height: 80px;
+            font-size: 20px;
+            border-radius: 10px;
+        }
+        .button:hover{
+            background-color: yellow;
+            color: black;
+        }
+    </style>
+
+</head>
+
+    
+<body>
+
+    <h1>Média</h1>
+    
+    <section id="corpo">
+        <p><input type="num" id="num1" value=50 step=2>Informe o primeiro número</p>
+        <br>
+        <p><input type="num" id="num2" value=50 step=2>Informe o segundo número</p>
+        <br>
+        <button onclick="calcular()" class="button">Calcular</button>
+        <br>
+        <br>
+        <button onclick="limpar()" class="button">Limpar</button>
+    </section>
+    
+
+    <div id="resultado" style="padding: 30px;">
+        O resultado é...
+    </div>
+
+    
+
+    <footer>Curso de JavaScript - SENAC Tatuapé 2019</footer>
+
+
+    <script> 
+   
+        function calcular() {
+            let n1 = document.getElementById("num1").value
+            let n2 = document.getElementById("num2").value
+            let media = (Number(n1) + Number(n2))/2
+            document.querySelector("div#resultado").innerHTML = `O resultado é ${media.toFixed(1)}`
+        }
+        function limpar() {
+            if(document.getElementById("num1").value != "") {
+                document.getElementById("num1").value = ""
+                document.getElementById("num2").value = ""
+                document.querySelector("div#resultado").innerHTML = `O resultado é..`
+            }
+        }
+    </script>
+
+</body>
+</html>

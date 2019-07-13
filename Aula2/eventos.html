@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<style>
+    body {
+        background-color: brown;
+        color: rgb(255, 255, 255);
+        font-size: 24px;
+        font-family: Helvetica;
+    }
+    #area {
+        background-color: black;
+        color: yellow;
+        font-size: 18px;
+        width: 350px;
+        height: 200px;
+        text-align: center;
+        margin: auto;
+    }
+    #eventos {
+        width: 250px;
+        height: auto;
+        margin: auto;
+        padding: 20px;
+    }
+
+</style>
+
+<body>
+
+    <script>
+
+        // let nome = prompt("Qual o seu nome?")
+        let nome = "Gabriel"
+        document.write(`Olá, <strong>${nome.trim()}</strong>! <br>`)
+        document.write(`Seu nome tem ${nome.trim().length} caracteres. <br>`)
+        document.write(`OLÁ ${nome.toUpperCase().trim()} !!!!! <br>`)
+        document.write(`olá ${nome.toLowerCase().trim()}`)
+    </script>
+
+    <div>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Blanditiis hic nisi voluptas labore architecto
+            deserunt eligendi quos fuga, exercitationem nobis similique, itaque natus temporibus quibusdam! Provident
+            quibusdam sed recusandae optio!</p>
+    </div>
+
+    <div id="area" 
+    onclick="clicar()" 
+    onmouseenter="entrar()"
+    onmouseout="sair()">
+    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos officia fuga nisi, consequuntur, ullam velit harum neque nesciunt quam odit possimus laboriosam aut adipisci sequi, itaque cupiditate quae dolor sit.
+    </div>
+
+    <div id="eventos">
+    MAIS EVENTOS <a href="https://developer.mozilla.org/pt-BR/docs/Web/Events"
+    target="_blank">AQUI</a>
+    </div>
+
+    <script>
+
+    var a = document.getElementById("area")
+    var b = a.innerHTML
+    function clicar() {
+    a.innerHTML = "OLÁ, VOCÊ CLICOU!!"
+    a.style.background = "green"
+    }
+    function entrar() {
+    a.innerHTML = "CLIQUE!!"
+    a.style.background = "red"
+    }
+    function sair() {
+    a.innerHTML = b
+    a.style.background = "black"
+    }
+
+    // https://developer.mozilla.org/pt-BR/docs/Web/Events
+    </script>
+
+</body>
+
+</html>
