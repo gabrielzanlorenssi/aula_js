@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Calculando IMC</title>
+</head>
+
+<!-- CSS -->
+<style>
+  #my_body{
+		background-color: #FAF5F2;
+		font: 15pt verdana;
+		color: black;
+	}
+
+section.calculo{
+		width: 300px;
+		margin: auto;
+		color:  #FAF5F2;
+		padding: 10px;
+		text-align: center;
+		background: #f4511e; 
+		border-radius: 30px;
+}
+
+section.calculo2{
+		width: 500px;
+		margin: auto;
+		padding: 20px;
+		text-align: center;
+		border-radius: 30px;
+}
+
+.button {
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #FAF5F2;
+  text-align: center;
+  font-size: 28px;
+  padding: 20px;
+  width: 200px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: auto;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+.footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #f4511e;
+        color: white;
+        text-align: center;
+        }
+</style>
+
+<!-- body -->
+<body id="my_body">
+	
+<h1 id="nome">Olá, --nome--!</h1>
+
+<!-- lorem -->
+<p>O índice de massa corporal (IMC) é uma medida internacional usada para calcular se uma pessoa está no peso ideal.</p>
+<p>Desenvolvido pelo polímata Lambert Quételet no fim do século XIX, trata-se de um método fácil e rápido para a avaliação do nível de gordura de cada pessoa, sendo, por isso, um preditor internacional de obesidade adotado pela Organização Mundial da Saúde (OMS).</p>
+<p>O IMC é determinado pela divisão da massa do indivíduo pelo quadrado de sua altura, em que a massa está em quilogramas e a altura em metros.</p>
+
+<section class="calculo">
+<!-- peso e altura-->
+<p style="margin: 0px">Qual a sua altura? </p> 
+<input type="number" value="1.80" id="input1"
+min=0.00 max=3.00 step=0.01>
+
+<p style="margin: 0px">Qual o seu peso? </p> 
+<input type="number" value="70" id="input2"
+min=0 max=500 step=1>
+</section>
+
+<section class="calculo2">
+<!-- botao do imc -->
+<button onclick="imc_calc(); imc_status(); peso_ideal()" class = "button" >
+<span>Calcular o meu IMC</span></button>
+</section>
+
+
+<!-- respostas -->
+<div>
+	<p id="res1">Seu IMC é de:</p>
+	<p id="res3">Seu peso ideal está entre..</p>
+	<p id="res2">Você está..</p>
+</div>
+
+
+<div class="footer">Curso de JavaScript - SENAC Tatuapé 2019</div>    
+
+
+<!-- javscript -->
+<script type="text/javascript" src="imc.js"> 
+</script>
+
+
+
+</body>
+</html>

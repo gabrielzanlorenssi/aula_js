@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Categoria do nadador</title>
+</head>
+
+<style>
+    body{
+		background-color: #FAF5F2;
+		font: 15pt verdana;
+		color: black;
+	}
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #f4511e;
+        color: white;
+        text-align: center;
+        }
+</style>
+<body>
+    
+    <h1>Categoria do nadador</h1>
+
+    <div>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Deserunt doloremque, officiis reprehenderit impedit nostrum quae corrupti aliquam ipsa asperiores omnis voluptatem sapiente. Eveniet reprehenderit, dicta amet debitis dolorem nostrum laboriosam.</p>
+        <p>Voluptates adipisci velit quibusdam? Deserunt eos incidunt dignissimos similique numquam unde hic ut maxime dolorum laborum explicabo laboriosam rem voluptas vitae, quisquam inventore accusantium soluta perspiciatis totam expedita ratione. Id.</p>
+        <p>Nihil quidem reiciendis adipisci magni cum! Eum, veniam ducimus qui hic, illum dolorum eos repellat debitis tempora animi, tenetur accusantium quia repudiandae modi sit perspiciatis atque quo! Aspernatur, nisi expedita?</p>
+    </div>
+
+<!-- peso e altura-->
+<p style="margin: 0px">Qual o nome do nadador?</p> 
+<input type="text" id="input_nome">
+
+<p style="margin: 0px">Qual a idade do nadador? </p> 
+<input type="number" value="70" id="input_idade"
+min=0 max=500 step=1>
+</section>
+
+<section class="calculo2">
+<!-- botao do imc -->
+<button onclick="sua_idade(); seu_nome(); sua_categoria()" class = "button" >
+<span>Qual a categoria?</span></button>
+<button onclick="limpar()" class="button"><span>Limpar</span></button>
+</section>
+
+<!-- respostas -->
+<div>
+	<p id="res1">O nome do nadador é..</p>
+	<p id="res3">Sua idade é..</p>
+	<p id="res2">Pertence à categoria..</p>
+</div>
+
+
+    <script type="text/javascript" src="nadador.js">
+    </script>
+
+    <div class="footer">Curso de JavaScript - SENAC Tatuapé 2019</div>    
+
+</body>
+</html>
