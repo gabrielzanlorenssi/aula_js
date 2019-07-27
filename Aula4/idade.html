@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Calculando idade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="idade.css" />
+</head>
+<body>
+    <h1>Ano de nascimento</h1>
+
+    <div>
+        <section>
+            <div>
+               <span>
+                    <p>Que ano você nasceu?</p>
+                    <input type="number" name="age" id="anodig" min=0  max=100>
+               </span> 
+            </div>
+            <div>
+                <input type="radio" name="foo" id="fem" value="1" />
+                <label for="fem">Feminino</label>
+                <input type="radio" name="foo" id="masc" value="2" />
+                <label for="masc">Masculino</label>
+            </div>
+            <div>
+                <button onclick='verificar()'>Gerar foto</button>
+            </div>
+
+            <div id="resultado">
+
+            </div>
+
+            <script src="idade.js"></script>
+
+        </section>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hora do sistema</title>
+    <link rel="stylesheet" href="estilo_hora.css">
+</head>
+<body>
+    <h1 id="title">Hora do dia</h1>
+
+    <section>   
+        <div>
+            <p id="msg">Agora são...</p>
+        </div>
+        <div>
+            <img  id="imgs" src="../img/manha.png" alt="Foto de amanhecer">
+        </div>
+    </section>
+    
+    <!-- script -->
+    <script>
+    let msg = document.getElementById("msg")
+    let img = document.getElementById("imgs")
+    let title = document.getElementById("title")
+    let data = new Date()
+    let hora = data.getHours()
+
+    // changing
+    msg.innerHTML = `Agora são ${hora} horas`
+    // if
+    if (hora >= 6 && hora < 12) {
+        document.body.style.background = "#7FFFD4"
+        img.src = "../img/manha.png"
+        title.innerHTML = "Agora é de manhã"
+    } else if (hora >= 12 && hora <= 18) {
+        document.body.style.background = "#DAA520"
+        img.src = "../img/tarde.png"
+        title.innerHTML = "Agora é de tarde"
+    } else if (hora >= 18 && hora < 24) {
+        document.body.style.background = "#1C1C1C"
+        img.src = "../img/noite.png"
+        title.innerHTML = "Agora é de noite"
+        title.style.color = "white"
+    } else  {
+        document.body.style.background = "#1C1C1C"
+        img.src = "../img/noite.png"
+        title.innerHTML = "Agora é de madrugada"
+        title.style.color = "yellow"
+    }
+
+    </script>
+</body>
+</html>
