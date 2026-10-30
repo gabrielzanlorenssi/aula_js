@@ -17,10 +17,11 @@ const CONFIG = {
     ],
     // Faixas de % dos votos válidos do vencedor no município
     faixas: [50, 55, 60, 70],
-    corEmpate: "#7f7f7f",
-    corSemDado: "#d9d9d9",
-    paralelo: 8, // requisições simultâneas ao TSE (limite oficial: 100 por segundo)
-    maxFalhasSeguidas: 15 // muitos 404 seguidos fazem o TSE bloquear o IP
+    corEmpate: "#5e6470",
+    corSemDado: "#e3e5e8",
+    paralelo: 24, // requisições simultâneas ao TSE (limite oficial: 100 por segundo)
+    maxFalhasSeguidas: 15, // muitos 404 seguidos fazem o TSE bloquear o IP
+    chaveCache: "apuracao-2t-6258-v1"
 };
 
 const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho",
@@ -43,7 +44,6 @@ const url = {
 // Estado da página
 const estado = {
     ufs: [], // [{ sigla, nome, municipios: [{ cd, cdi, nm }] }]
-    ibgePorTse: new Map(),
     tsePorIbge: new Map(),
     resultados: new Map(), // código TSE do município -> resultado lido
     recortes: new Map(), // "br" ou sigla da UF -> resultado lido
@@ -52,16 +52,18 @@ const estado = {
     selecao: "br",
     fixado: null,
     carga: 0, // muda a cada nova carga, para descartar respostas antigas
+    municipiosTestados: false,
     municipiosIndisponiveis: false
 };
 
 const el = {
     titulo: document.getElementById("titulo"),
     status: document.getElementById("status"),
-    placar: document.querySelector("#placar tbody"),
-    placarNota: document.getElementById("placar-nota"),
+    placar: document.getElementById("placar"),
     uf: document.getElementById("uf"),
     atualizar: document.getElementById("atualizar"),
+    carga: document.getElementById("carga"),
+    cargaBarra: document.getElementById("carga-barra"),
     progresso: document.getElementById("progresso"),
     legenda: document.getElementById("legenda"),
     detalhe: document.getElementById("detalhe")
@@ -76,8 +78,8 @@ let caminho = d3.geoPath();
 
 // ---------- Leitura dos arquivos do TSE ----------
 
-async function baixar(endereco) {
-    const r = await fetch(endereco, { cache: "no-cache", mode: "cors" });
+async function baixar(endereco, forcar = false) {
+    const r = await fetch(endereco, { cache: forcar ? "no-cache" : "default", mode: "cors" });
     if (!r.ok) {
         const erro = new Error(`${r.status} em ${endereco}`);
         erro.status = r.status;
@@ -111,6 +113,27 @@ function lerResultado(json) {
         geracao: { data: json.dg, hora: json.hg }
     };
 }
+
+// ---------- Cache no navegador ----------
+// Só guarda municípios com apuração encerrada (and = "f"); o botão Atualizar ignora o cache.
+
+function lerCache() {
+    try {
+        const bruto = localStorage.getItem(CONFIG.chaveCache);
+        if (!bruto) return;
+        for (const [cd, r] of Object.entries(JSON.parse(bruto))) estado.resultados.set(cd, r);
+    } catch (e) { /* sem armazenamento: segue sem cache */ }
+}
+
+function gravarCache() {
+    try {
+        const finais = {};
+        for (const [cd, r] of estado.resultados) if (r.final) finais[cd] = r;
+        localStorage.setItem(CONFIG.chaveCache, JSON.stringify(finais));
+    } catch (e) { /* cota cheia ou bloqueada: ignora */ }
+}
+
+// ---------- Cores ----------
 
 function vencedor(res) {
     if (!res || !res.validos) return null;
@@ -151,35 +174,46 @@ function nomeRecorte(sel) {
 }
 
 function tituloCaso(txt) {
-    const minusculas = new Set(["de", "da", "do", "das", "dos", "e", "d'"]);
+    const minusculas = new Set(["de", "da", "do", "das", "dos", "e"]);
     return txt.toLowerCase().split(" ").map((p, i) =>
         i > 0 && minusculas.has(p) ? p : p.charAt(0).toUpperCase() + p.slice(1)).join(" ");
+}
+
+// Barra com a divisão dos votos válidos entre os dois candidatos e marca em 50%
+function barraDivisao(res, fina = false) {
+    const [a, b] = CONFIG.candidatos;
+    const pa = res?.validos ? (res.votos[a.numero] / res.validos) * 100 : 0;
+    const pb = res?.validos ? (res.votos[b.numero] / res.validos) * 100 : 0;
+    return `<div class="barra${fina ? " fina" : ""}" aria-hidden="true">` +
+        `<span style="width:${pa}%;background:${a.cor}"></span>` +
+        `<span style="width:${pb}%;background:${b.cor};margin-left:auto"></span>` +
+        "<i class=\"meio\"></i></div>";
 }
 
 // ---------- Placar ----------
 
 function desenharPlacar() {
     const res = estado.recortes.get(estado.selecao);
-    el.placar.innerHTML = "";
     if (!res) {
-        el.placarNota.textContent = "";
+        el.placar.innerHTML = "";
         return;
     }
-    for (const c of CONFIG.candidatos) {
+    const lados = CONFIG.candidatos.map((c) => {
         const votos = res.votos[c.numero];
         const pct = res.validos ? (votos / res.validos) * 100 : null;
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td><span class="marca" style="background:${c.cor}"></span>${c.nome}</td>` +
-            `<td class="num">${votos == null ? "" : fmtInt.format(votos)}</td>` +
-            `<td class="num">${pct == null ? "" : fmtPct.format(pct) + "%"}</td>`;
-        el.placar.appendChild(tr);
-    }
+        return `<div><span class="placar-nome">${c.nome}</span>` +
+            `<span class="placar-pct" style="color:${c.cor}">${pct == null ? "" : fmtPct.format(pct) + "%"}</span>` +
+            `<span class="placar-votos">${votos == null ? "" : fmtInt.format(votos) + " votos"}</span></div>`;
+    });
     const sec = pctSecoes(res);
     const quando = dataTSE(res.geracao);
-    const partes = [];
-    partes.push(`${nomeRecorte(estado.selecao)}: ${sec == null ? "seções totalizadas não informadas" : fmtPct.format(sec) + "% das seções totalizadas"}`);
-    if (quando) partes.push(`arquivo do TSE gerado em ${quando}`);
-    el.placarNota.textContent = partes.join("; ") + ".";
+    const nota = `${nomeRecorte(estado.selecao)}: ` +
+        (sec == null ? "seções totalizadas não informadas" : `${fmtPct.format(sec)}% das seções totalizadas`) +
+        (quando ? `. Arquivo do TSE gerado em ${quando}.` : ".");
+    el.placar.innerHTML = `<div class="placar-nomes">${lados.join("")}</div>` +
+        barraDivisao(res) +
+        "<div class=\"barra-rotulo\">50% dos válidos</div>" +
+        `<p class="nota">${nota}</p>`;
 }
 
 // ---------- Título-afirmação ----------
@@ -187,8 +221,9 @@ function desenharPlacar() {
 function atualizarTitulo(completo) {
     const muns = municipiosDaSelecao();
     const nome = nomeRecorte(estado.selecao);
+    const neutro = `Apuração do 2º turno por município: ${nome}`;
     if (!completo || !muns.length) {
-        el.titulo.textContent = `Apuração do 2º turno por município: ${nome}`;
+        el.titulo.textContent = neutro;
         return;
     }
     const conta = new Map(CONFIG.candidatos.map((c) => [c.numero, 0]));
@@ -203,7 +238,7 @@ function atualizarTitulo(completo) {
         if (!v.empate) conta.set(v.candidato.numero, conta.get(v.candidato.numero) + 1);
     }
     if (!comDado) {
-        el.titulo.textContent = `Apuração do 2º turno por município: ${nome}`;
+        el.titulo.textContent = neutro;
         return;
     }
     const [lider] = [...CONFIG.candidatos].sort((a, b) => conta.get(b.numero) - conta.get(a.numero));
@@ -215,22 +250,19 @@ function atualizarTitulo(completo) {
 // ---------- Legenda ----------
 
 function desenharLegenda() {
-    const rot = CONFIG.faixas.map((f, i) => {
-        const prox = CONFIG.faixas[i + 1];
-        return prox ? `${f}% a ${prox}%` : `${f}% ou mais`;
-    });
-    let html = "<h2>Vencedor e % dos votos válidos</h2><div class=\"legenda-linhas\">";
-    for (const c of CONFIG.candidatos) html += `<strong>${c.nome}</strong>`;
-    for (let i = CONFIG.faixas.length - 1; i >= 0; i--) {
-        for (const c of CONFIG.candidatos) {
-            html += `<div class="legenda-item"><span style="background:${c.cores[i]}"></span><span>${rot[i]}</span></div>`;
-        }
-    }
-    html += "</div><div class=\"legenda-extra\">";
-    html += `<div class="legenda-item"><span style="background:${CONFIG.corEmpate}"></span><span>Empate</span></div>`;
-    html += `<div class="legenda-item"><span style="background:${CONFIG.corSemDado}"></span><span>Sem resultado</span></div>`;
-    html += "</div>";
-    el.legenda.innerHTML = html;
+    const [a, b] = CONFIG.candidatos;
+    // Escala divergente: vitória folgada de um lado, vitória folgada do outro
+    const blocos = [...a.cores].reverse().concat(b.cores);
+    const marcas = ["70", "60", "55", "50", "55", "60", "70"];
+    el.legenda.innerHTML =
+        "<p class=\"legenda-titulo\">Vencedor no município e % dos votos válidos</p>" +
+        `<div class="legenda-nomes"><span style="color:${a.cor}">${a.nome}</span><span style="color:${b.cor}">${b.nome}</span></div>` +
+        `<div class="legenda-escala">${blocos.map((c) => `<span style="background:${c}"></span>`).join("")}</div>` +
+        `<div class="legenda-marcas">${marcas.map((m, i) => `<span style="left:${((i + 1) / 8) * 100}%">${m}</span>`).join("")}</div>` +
+        "<div class=\"legenda-extra\">" +
+        `<span class="legenda-item"><i style="background:${CONFIG.corEmpate}"></i>Empate</span>` +
+        `<span class="legenda-item"><i style="background:${CONFIG.corSemDado}"></i>Sem resultado ainda</span>` +
+        "</div>";
 }
 
 // ---------- Detalhe do município ----------
@@ -245,13 +277,14 @@ function mostrarDetalhe(feicao) {
         el.detalhe.innerHTML = html;
         return;
     }
-    html += "<table><thead><tr><th>Candidato</th><th class=\"num\">Votos</th><th class=\"num\">Válidos</th></tr></thead><tbody>";
+    html += barraDivisao(res, true);
+    html += "<table><tbody>";
     for (const c of CONFIG.candidatos) {
         const votos = res.votos[c.numero];
         const pct = res.validos ? (votos / res.validos) * 100 : null;
         html += `<tr><td><span class="marca" style="background:${c.cor}"></span>${c.nome}</td>` +
             `<td class="num">${votos == null ? "" : fmtInt.format(votos)}</td>` +
-            `<td class="num">${pct == null ? "" : fmtPct.format(pct) + "%"}</td></tr>`;
+            `<td class="num"><strong>${pct == null ? "" : fmtPct.format(pct) + "%"}</strong></td></tr>`;
     }
     html += "</tbody></table>";
     const sec = pctSecoes(res);
@@ -296,18 +329,19 @@ function desenharMapa() {
     const projecao = d3.geoMercator().fitWidth(LARGURA, colecao);
     caminho = d3.geoPath(projecao);
     const [[, y0], [, y1]] = caminho.bounds(colecao);
-    const altura = Math.ceil(y1 - y0);
     projecao.translate([projecao.translate()[0], projecao.translate()[1] - y0]);
-    svg.attr("viewBox", `0 0 ${LARGURA} ${altura}`);
+    svg.attr("viewBox", `0 0 ${LARGURA} ${Math.ceil(y1 - y0)}`);
 
-    // fill e stroke como atributos: o SVG abre limpo no Illustrator
+    const brasil = estado.selecao === "br";
+    // fill e stroke como atributos: o SVG abre limpo no Illustrator.
+    // No Brasil inteiro o contorno de município tem a cor do próprio polígono, para o mapa não virar textura.
     gMun.selectAll("path").data(feicoes, (f) => f.properties.id).join("path")
         .attr("class", "mun")
         .attr("id", (f) => `m${f.properties.id}`)
         .attr("d", caminho)
         .attr("fill", corFeicao)
-        .attr("stroke", "#ffffff")
-        .attr("stroke-width", estado.selecao === "br" ? 0.2 : 0.6)
+        .attr("stroke", brasil ? corFeicao : "#ffffff")
+        .attr("stroke-width", brasil ? 0.3 : 0.6)
         .on("pointerenter", (ev, f) => {
             if (estado.fixado) return;
             destacar(f);
@@ -319,20 +353,23 @@ function desenharMapa() {
             mostrarDetalhe(f);
         });
 
-    const limites = estado.selecao === "br"
-        ? topojson.mesh(estado.topo, estado.topo.objects.ufs, (a, b) => a !== b)
+    const limites = brasil
+        ? topojson.mesh(estado.topo, estado.topo.objects.ufs)
         : estado.ufsGeo.find((u) => u.properties.uf === estado.selecao.toUpperCase());
     gUf.selectAll("path").data(limites ? [limites] : []).join("path")
         .attr("d", caminho)
         .attr("fill", "none")
-        .attr("stroke", "#1a1a1a")
-        .attr("stroke-width", 0.8);
+        .attr("stroke", "#ffffff")
+        .attr("stroke-width", brasil ? 1.2 : 2)
+        .attr("stroke-linejoin", "round");
 
     destacar(null);
 }
 
 function recolorir() {
-    gMun.selectAll("path").attr("fill", corFeicao);
+    const brasil = estado.selecao === "br";
+    const paths = gMun.selectAll("path").attr("fill", corFeicao);
+    if (brasil) paths.attr("stroke", corFeicao);
 }
 
 // ---------- Carga dos municípios ----------
@@ -360,6 +397,12 @@ async function emFila(itens, tarefa, aoProgredir) {
     if (abortar) throw abortar;
 }
 
+function mostrarProgresso(feitos, total) {
+    el.carga.hidden = false;
+    el.cargaBarra.style.width = `${(feitos / total) * 100}%`;
+    el.progresso.textContent = `Lendo municípios no TSE: ${fmtInt.format(feitos)} de ${fmtInt.format(total)}`;
+}
+
 async function carregarSelecao(forcar = false) {
     const carga = ++estado.carga;
     const sel = estado.selecao;
@@ -367,7 +410,7 @@ async function carregarSelecao(forcar = false) {
 
     // Placar do recorte (arquivo do Brasil ou da UF)
     try {
-        if (forcar || !estado.recortes.has(sel)) estado.recortes.set(sel, lerResultado(await baixar(url.recorte(sel))));
+        if (forcar || !estado.recortes.has(sel)) estado.recortes.set(sel, lerResultado(await baixar(url.recorte(sel), forcar)));
     } catch (e) {
         mostrarErro(`Não foi possível ler o total de ${nomeRecorte(sel)} no TSE (${e.message}).`);
     }
@@ -381,18 +424,17 @@ async function carregarSelecao(forcar = false) {
 
     const ufs = sel === "br" ? estado.ufs : estado.ufs.filter((u) => u.sigla === sel);
     const pendentes = ufs.flatMap((u) => u.municipios.map((m) => ({ uf: u.sigla, ...m })))
-        .filter((m) => forcar || !estado.resultados.has(m.cd));
+        .filter((m) => forcar || !estado.resultados.get(m.cd)?.final);
 
     // Testa um arquivo antes de pedir centenas: 404 em série bloqueia o IP no TSE
     if (pendentes.length && !estado.municipiosTestados) {
         try {
             const m = pendentes[0];
-            estado.resultados.set(m.cd, lerResultado(await baixar(url.municipio(m.uf, m.cd))));
+            estado.resultados.set(m.cd, lerResultado(await baixar(url.municipio(m.uf, m.cd), forcar)));
             estado.municipiosTestados = true;
             pendentes.shift();
         } catch (e) {
             estado.municipiosIndisponiveis = true;
-            el.progresso.textContent = "";
             mostrarErro(`O TSE não entregou o arquivo por município (${e.message}). O placar acima continua válido; o mapa fica sem cor.`);
             el.atualizar.disabled = false;
             return;
@@ -401,15 +443,16 @@ async function carregarSelecao(forcar = false) {
 
     const total = pendentes.length;
     let ultimoDesenho = 0;
+    if (total) mostrarProgresso(0, total);
     try {
         await emFila(pendentes, async (m) => {
-            const res = lerResultado(await baixar(url.municipio(m.uf, m.cd)));
+            const res = lerResultado(await baixar(url.municipio(m.uf, m.cd), forcar));
             if (carga === estado.carga) estado.resultados.set(m.cd, res);
         }, (feitos) => {
             if (carga !== estado.carga) return;
-            el.progresso.textContent = `Lendo municípios no TSE: ${fmtInt.format(feitos)} de ${fmtInt.format(total)}`;
+            mostrarProgresso(feitos, total);
             const agora = performance.now();
-            if (agora - ultimoDesenho > 400) {
+            if (agora - ultimoDesenho > 500) {
                 ultimoDesenho = agora;
                 recolorir();
             }
@@ -420,8 +463,15 @@ async function carregarSelecao(forcar = false) {
     if (carga !== estado.carga) return;
 
     recolorir();
+    gravarCache();
+    el.carga.hidden = true;
+    el.progresso.textContent = "";
     const faltando = municipiosDaSelecao().filter((m) => !estado.resultados.has(m.cd)).length;
-    el.progresso.textContent = faltando ? `${fmtInt.format(faltando)} municípios ficaram sem resultado nesta leitura.` : "";
+    if (faltando) {
+        el.carga.hidden = false;
+        el.cargaBarra.style.width = "0";
+        el.progresso.textContent = `${fmtInt.format(faltando)} municípios ficaram sem resultado nesta leitura.`;
+    }
     atualizarTitulo(true);
     if (estado.fixado) mostrarDetalhe(estado.fixado);
     el.atualizar.disabled = false;
@@ -436,8 +486,15 @@ function mostrarErro(msg) {
 
 async function iniciar() {
     desenharLegenda();
+    lerCache();
     try {
-        const cfg = await baixar(url.config());
+        // Tudo o que não depende de nada é pedido ao mesmo tempo
+        const pCfg = baixar(url.config(), true);
+        const pMun = baixar(url.municipios());
+        const pTopo = d3.json("geo/municipios.topojson");
+        const pBr = baixar(url.recorte("br"), true).then(lerResultado).catch(() => null);
+
+        const cfg = await pCfg;
         const existe = (cfg.pl || []).some((p) => p.c === CONFIG.ciclo &&
             (p.e || []).some((e) => String(e.cd) === CONFIG.eleicao));
         if (!existe) {
@@ -445,16 +502,19 @@ async function iniciar() {
             return;
         }
 
-        const [mun, topo] = await Promise.all([baixar(url.municipios()), d3.json("geo/municipios.topojson")]);
+        const br = await pBr;
+        if (br) {
+            estado.recortes.set("br", br);
+            desenharPlacar();
+        }
+
+        const [mun, topo] = await Promise.all([pMun, pTopo]);
 
         for (const abr of mun.abr || []) {
             const sigla = String(abr.cd).toLowerCase();
             if (sigla === "zz") continue; // exterior
             const municipios = (abr.mu || []).map((m) => ({ cd: String(m.cd), cdi: String(m.cdi), nm: m.nm }));
-            for (const m of municipios) {
-                estado.ibgePorTse.set(m.cd, m.cdi);
-                estado.tsePorIbge.set(m.cdi, m.cd);
-            }
+            for (const m of municipios) estado.tsePorIbge.set(m.cdi, m.cd);
             estado.ufs.push({ sigla, nome: tituloCaso(abr.ds || sigla), municipios });
         }
         estado.ufs.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
@@ -468,7 +528,7 @@ async function iniciar() {
         const comPoligono = new Set(estado.feicoes.map((f) => String(f.properties.id)));
         const semPoligono = estado.ufs.flatMap((u) => u.municipios).filter((m) => !comPoligono.has(m.cdi));
         el.status.textContent = "Dados oficiais do TSE." +
-            (semPoligono.length ? ` ${semPoligono.length} município(s) da lista do TSE não têm polígono na malha: ${semPoligono.map((m) => tituloCaso(m.nm)).join(", ")}.` : "");
+            (semPoligono.length ? ` ${semPoligono.length === 1 ? "Um município" : semPoligono.length + " municípios"} da lista do TSE sem polígono na malha: ${semPoligono.map((m) => tituloCaso(m.nm)).join(", ")}.` : "");
 
         desenharMapa();
         await carregarSelecao();

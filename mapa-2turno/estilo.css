@@ -1,12 +1,15 @@
-/* Base para tela estreita; media queries só ampliam */
+/* Base para tela estreita; media queries só ampliam.
+   Coluna única no celular; no desktop, mapa largo com painel do município ao lado. */
 :root {
-    --texto: #1a1a1a;
-    --texto-2: #4a4a4a;
-    --linha: #8a8a8a;
+    --texto: #16181d;
+    --texto-2: #4b505a; /* 8:1 sobre o fundo */
+    --linha: #c9ccd2;
     --fundo: #ffffff;
-    --fundo-2: #f2f2f0;
+    --fundo-2: #f3f4f6;
     --lula: #b2182b;
     --flavio: #2166ac;
+    --titulo: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --ui: "Libre Franklin", Arial, Helvetica, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -15,76 +18,101 @@ body {
     margin: 0;
     background: var(--fundo);
     color: var(--texto);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--ui);
     font-size: 16px;
     line-height: 1.45;
 }
 
 main {
-    padding: 20px 16px 40px;
-    max-width: 1200px;
+    padding: 24px 16px 48px;
+    max-width: 1240px;
 }
 
-header { margin-bottom: 20px; }
+/* Cabeçalho */
+.topo { margin-bottom: 28px; max-width: 760px; }
 
 .chapeu {
-    margin: 0 0 6px;
-    font-family: Arial, Helvetica, sans-serif;
+    margin: 0 0 8px;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 700;
     color: var(--texto-2);
 }
 
 h1 {
-    margin: 0 0 10px;
-    font-size: 26px;
-    line-height: 1.15;
+    margin: 0 0 12px;
+    font-family: var(--titulo);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.12;
+    text-wrap: balance;
 }
 
-.status, .nota {
+.nota {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
     color: var(--texto-2);
 }
 
 .erro { color: #8b0000; }
 
-/* Placar */
-.placar { margin-bottom: 24px; }
+/* Placar com barra de divisão dos votos válidos */
+.placar { margin-bottom: 32px; max-width: 640px; }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
+.placar-nomes {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 6px;
 }
 
-th {
-    text-align: left;
-    font-weight: normal;
+.placar-nomes div:last-child { text-align: right; }
+
+.placar-nome { font-size: 15px; font-weight: 600; }
+
+.placar-pct {
+    display: block;
+    font-family: var(--titulo);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.placar-votos {
+    display: block;
+    font-size: 14px;
     color: var(--texto-2);
-    font-size: 13px;
-    padding: 0 8px 4px 0;
-    border-bottom: 1px solid var(--texto);
+    font-variant-numeric: tabular-nums;
 }
 
-td {
-    padding: 8px 8px 8px 0;
-    border-bottom: 1px solid #d0d0d0;
+.barra {
+    position: relative;
+    display: flex;
+    height: 20px;
+    background: var(--fundo-2);
+    margin: 10px 0 8px;
 }
 
-.num { text-align: right; font-variant-numeric: tabular-nums; }
+.barra.fina { height: 10px; margin: 6px 0; }
 
-.marca {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-right: 8px;
-    vertical-align: -1px;
+.barra span { display: block; height: 100%; }
+
+.barra .meio {
+    position: absolute;
+    left: 50%;
+    top: -5px;
+    bottom: -5px;
+    width: 0;
+    border-left: 2px solid var(--texto);
 }
 
-.placar .nota { margin-top: 8px; }
+.barra-rotulo {
+    display: flex;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--texto-2);
+    margin-bottom: 10px;
+}
 
 /* Controles */
 .controles {
@@ -92,32 +120,37 @@ td {
     flex-wrap: wrap;
     align-items: center;
     gap: 8px 12px;
-    margin-bottom: 8px;
-    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 12px;
 }
 
-.controles label { font-size: 14px; font-weight: bold; }
+.controles label { font-size: 14px; font-weight: 700; }
 
 select, button {
     font: inherit;
     font-size: 15px;
-    padding: 8px 10px;
+    padding: 9px 12px;
     border: 1px solid var(--texto);
     border-radius: 0;
     background: var(--fundo);
     color: var(--texto);
 }
 
-select { flex: 1 1 200px; max-width: 320px; }
+select { flex: 1 1 200px; max-width: 340px; }
 
 button { cursor: pointer; }
 button:hover { background: var(--fundo-2); }
-button:disabled { color: var(--texto-2); cursor: default; }
+button:disabled { color: var(--texto-2); border-color: var(--linha); cursor: default; }
+select:focus-visible, button:focus-visible { outline: 3px solid var(--flavio); outline-offset: 2px; }
 
-#progresso { min-height: 20px; margin-bottom: 12px; }
+/* Progresso da leitura */
+.carga { margin-bottom: 16px; max-width: 640px; }
+
+.carga-trilho { height: 4px; background: var(--fundo-2); margin-bottom: 6px; }
+
+.carga-barra { height: 100%; width: 0; background: var(--texto); }
 
 /* Mapa */
-.mapa { margin: 0 0 20px; }
+.mapa { margin: 0 0 24px; }
 
 #mapa {
     display: block;
@@ -128,46 +161,77 @@ button:disabled { color: var(--texto-2); cursor: default; }
 
 #mapa .mun { cursor: pointer; }
 
-/* Legenda e detalhe */
-.legenda {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    margin-bottom: 24px;
+/* Legenda divergente */
+.legenda { max-width: 420px; margin-bottom: 16px; font-size: 13px; }
+
+.legenda-titulo { font-weight: 600; margin: 0 0 6px; }
+
+.legenda-nomes {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
-.legenda h2, .detalhe h2 {
-    font-size: 15px;
-    margin: 0 0 8px;
+.legenda-escala { display: grid; grid-template-columns: repeat(8, 1fr); }
+
+.legenda-escala span { height: 14px; }
+
+.legenda-marcas {
+    position: relative;
+    height: 18px;
+    color: var(--texto-2);
+    font-variant-numeric: tabular-nums;
 }
 
-.legenda-linhas {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px 16px;
-}
+.legenda-marcas span { position: absolute; top: 2px; transform: translateX(-50%); }
 
-.legenda-item { display: flex; align-items: center; }
+.legenda-extra { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px; }
 
-.legenda-item span:first-child {
-    flex: 0 0 16px;
-    height: 12px;
-    margin-right: 6px;
-}
+.legenda-item { display: flex; align-items: center; gap: 6px; }
 
-.legenda-extra { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.legenda-item i { display: block; width: 14px; height: 14px; }
 
+/* Painel do município */
 .detalhe {
-    font-family: Arial, Helvetica, sans-serif;
+    border-top: 2px solid var(--texto);
+    padding-top: 12px;
     font-size: 14px;
-    border-top: 1px solid var(--texto);
-    padding-top: 10px;
 }
 
-.detalhe table { font-size: 14px; margin: 6px 0 8px; }
+.detalhe h2 {
+    font-family: var(--titulo);
+    font-size: 22px;
+    line-height: 1.2;
+    margin: 0 0 10px;
+}
+
+.detalhe table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 12px;
+}
+
+.detalhe td {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--linha);
+}
+
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.marca {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 8px;
+}
+
+.detalhe .nota + .nota { margin-top: 2px; }
 
 footer {
-    margin-top: 32px;
-    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 40px;
+    padding-top: 12px;
+    border-top: 1px solid var(--linha);
     font-size: 13px;
     color: var(--texto-2);
     max-width: 70ch;
@@ -176,17 +240,17 @@ footer {
 a { color: var(--texto); }
 
 @media (min-width: 720px) {
-    main { padding: 32px 24px 56px; }
-    h1 { font-size: 34px; }
-    .placar { max-width: 560px; }
+    main { padding: 40px 32px 64px; }
+    h1 { font-size: 40px; }
+    .placar-pct { font-size: 30px; }
 }
 
 @media (min-width: 1000px) {
     .mapa-area {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 300px;
-        gap: 32px;
+        gap: 40px;
         align-items: start;
     }
-    .lateral { position: sticky; top: 16px; }
+    .detalhe { position: sticky; top: 24px; }
 }

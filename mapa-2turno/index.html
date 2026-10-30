@@ -4,46 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apuração do 2º turno por município</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+    <link rel="preconnect" href="https://resultados.tse.jus.br" crossorigin>
+    <link rel="preload" href="geo/municipios.topojson" as="fetch" crossorigin>
     <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
     <main>
-        <header>
+        <header class="topo">
             <p class="chapeu">Eleição 2026, presidente, 2º turno</p>
             <h1 id="titulo">Apuração do 2º turno por município</h1>
-            <p id="status" class="status">Carregando dados do TSE...</p>
+            <p id="status" class="nota">Carregando dados do TSE...</p>
         </header>
 
-        <section class="placar" aria-label="Resultado no recorte escolhido">
-            <table id="placar">
-                <thead>
-                    <tr><th scope="col">Candidato</th><th scope="col" class="num">Votos</th><th scope="col" class="num">Válidos</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <p id="placar-nota" class="nota"></p>
-        </section>
+        <section id="placar" class="placar" aria-label="Resultado no recorte escolhido"></section>
 
         <div class="controles">
-            <label for="uf">Estado</label>
+            <label for="uf">Ver</label>
             <select id="uf">
                 <option value="br">Brasil, todos os municípios</option>
             </select>
             <button id="atualizar" type="button">Atualizar</button>
         </div>
 
-        <p id="progresso" class="nota" aria-live="polite"></p>
+        <div id="carga" class="carga" hidden>
+            <div class="carga-trilho"><div id="carga-barra" class="carga-barra"></div></div>
+            <p id="progresso" class="nota" aria-live="polite"></p>
+        </div>
 
         <div class="mapa-area">
             <figure class="mapa">
+                <div id="legenda" class="legenda" aria-label="Legenda"></div>
                 <svg id="mapa" role="img" aria-labelledby="titulo"></svg>
             </figure>
 
-            <aside class="lateral">
-                <div id="legenda" class="legenda" aria-label="Legenda"></div>
-                <div id="detalhe" class="detalhe" aria-live="polite">
-                    <p class="nota">Passe o cursor ou toque num município para ver o resultado.</p>
-                </div>
+            <aside id="detalhe" class="detalhe" aria-live="polite">
+                <p class="nota">Passe o cursor ou toque num município para ver o resultado.</p>
             </aside>
         </div>
 
