@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuração do 2º turno por município</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <main>
+        <header>
+            <p class="chapeu">Eleição 2026, presidente, 2º turno</p>
+            <h1 id="titulo">Apuração do 2º turno por município</h1>
+            <p id="status" class="status">Carregando dados do TSE...</p>
+        </header>
+
+        <section class="placar" aria-label="Resultado no recorte escolhido">
+            <table id="placar">
+                <thead>
+                    <tr><th scope="col">Candidato</th><th scope="col" class="num">Votos</th><th scope="col" class="num">Válidos</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <p id="placar-nota" class="nota"></p>
+        </section>
+
+        <div class="controles">
+            <label for="uf">Estado</label>
+            <select id="uf">
+                <option value="br">Brasil, todos os municípios</option>
+            </select>
+            <button id="atualizar" type="button">Atualizar</button>
+        </div>
+
+        <p id="progresso" class="nota" aria-live="polite"></p>
+
+        <div class="mapa-area">
+            <figure class="mapa">
+                <svg id="mapa" role="img" aria-labelledby="titulo"></svg>
+            </figure>
+
+            <aside class="lateral">
+                <div id="legenda" class="legenda" aria-label="Legenda"></div>
+                <div id="detalhe" class="detalhe" aria-live="polite">
+                    <p class="nota">Passe o cursor ou toque num município para ver o resultado.</p>
+                </div>
+            </aside>
+        </div>
+
+        <footer>
+            <p>Fonte: <a href="https://resultados.tse.jus.br/oficial/app/index.html">TSE, Divulgação de Resultados</a>, arquivos oficiais lidos direto pelo navegador. Malha municipal do IBGE via <a href="https://github.com/cristoferluch/GeoDadosBrasil">GeoDadosBrasil</a>. Votos do exterior não aparecem no mapa, mas entram no total do Brasil.</p>
+        </footer>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+    <script src="mapa.js"></script>
+</body>
+</html>
